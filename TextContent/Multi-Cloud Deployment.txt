@@ -1,0 +1,50 @@
+--------------------------------------
+inputs:
+  environment:
+    type: string
+    enum:
+      - AWS
+      - Azure
+      - vSphere
+    default: AWS
+    title: Select Environment for Deployment
+    description: Target Environment
+  image:
+    type: string
+    enum:
+      - Ubuntu18
+    default: Ubuntu18
+    title: Select Image/OS
+  size:
+    type: string
+    enum:
+      - small
+      - medium
+      - large
+    default: medium
+    description: Size of Nodes
+    title: Node Size
+  text:
+    type: string
+    default: vRealize Automation 8 Workshop
+    description: HTML text content
+    title: HTML Text Content
+--------------------------------------
+    properties:
+      flavor: '${input.size}'
+      image: '${input.image}'
+      cloudConfig: |
+        repo_update: true
+        repo_upgrade: all
+        apt_source:
+          - source: deb http://archive.ubuntu.com/ubuntu main universe multiverse restricted
+
+        packages:
+         - apache2
+
+        runcmd:
+          - echo "${input.text}" > /var/www/html/index.html
+          - systemctl restart apache2
+--------------------------------------
+      constraints:
+        - tag: '${"cloud:" + to_lower(input.environment)}'
