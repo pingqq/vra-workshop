@@ -1,0 +1,12 @@
+      cloudConfig: |
+        repo_update: true
+        repo_upgrade: all
+        apt_source:
+          - source: deb http://archive.ubuntu.com/ubuntu main universe multiverse restricted
+
+        packages:
+         - apache2
+
+        runcmd:
+          - echo "vRealize Automation 8 Workshop" > /var/www/html/index.html
+          - systemctl restart apache2
