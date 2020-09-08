@@ -1,0 +1,17 @@
+formatVersion: 1
+inputs: {}
+resources:
+  Cloud_Service_Azure_SQL_Server_1:
+    type: Cloud.Service.Azure.SQL.Server
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      name: az-sql-svr-01
+      region: westus
+      account: Azure Cloud Account
+      version: '12.0'
+      administrator_login: sqladmin
+      resource_group_name: NetworkWatcherRG
+      administrator_login_password: VMware1!

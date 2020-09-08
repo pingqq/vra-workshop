@@ -1,0 +1,98 @@
+formatVersion: 1
+name: On-Demand-NSX-T-Security-Group
+version: 1
+inputs: {}
+resources:
+  web-sg:
+    type: Cloud.SecurityGroup
+    metadata:
+      layoutPosition:
+        - 0
+        - 1
+    properties:
+      securityGroupType: new
+      rules:
+        - name: https-wr
+          direction: inbound
+          protocol: TCP
+          ports: 443
+          source: any
+          access: Allow
+        - name: ssh-wr
+          direction: inbound
+          protocol: TCP
+          ports: 22
+          source: any
+          access: Deny
+      tags:
+        - key: web
+          value: https
+  Web:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 1
+        - 1
+    properties:
+      image: Ubuntu18
+      flavor: medium
+      tags:
+        - key: web
+          value: apache
+      networks:
+        - network: '${resource.NSX.id}'
+          tags:
+            - key: web
+              value: apache
+          securityGroups:
+            - '${resource["web-sg"].id}'
+      constraints:
+        - tag: 'cloud:vsphere'
+  NSX:
+    type: Cloud.NSX.Network
+    metadata:
+      layoutPosition:
+        - 2
+        - 0
+    properties:
+      networkType: outbound
+      constraints:
+        - tag: 'net:vsphere'
+      tags:
+        - key: web
+          value: apache-mysql
+  DB:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 3
+        - 1
+    properties:
+      image: Ubuntu18
+      flavor: medium
+      tags:
+        - key: db
+          value: mysql
+      networks:
+        - network: '${resource.NSX.id}'
+          tags:
+            - key: db
+              value: mysql
+          securityGroups:
+            - '${resource["db-sg"].id}'
+      constraints:
+        - tag: 'cloud:vsphere'
+  db-sg:
+    type: Cloud.SecurityGroup
+    metadata:
+      layoutPosition:
+        - 4
+        - 1
+    properties:
+      securityGroupType: new
+      rules:
+        - name: mysql-wr
+          direction: inbound
+          protocol: TCP
+          ports: 3306
+          source: any
